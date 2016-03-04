@@ -1,6 +1,5 @@
-.
 .idea/
-core/cache/
+core/cache/**
 *.lock
 *.phar
 core/vendor/
