@@ -17,49 +17,63 @@ Simple system intel tool for eve online.
 + [composer](https://getcomposer.org/download/)
 
 #### Installation
+These instructions assume an unconfigured debian based linux system
 
-##### Server
-Install nginx and php
-```apt-get install nginx php5-fpm php5-curl```
+Install nginx, php and git
+```sudo apt-get install nginx php5-fpm php5-curl git```
 
-Upload 
-Copy the nginx config:
-```cp 
-server {
-    listen       80;
-    server_name  some.host.com;
+Clone Copilot
+```cd /var/www/```
+```git clone https://github.com/RZN-FFEvo/CoPilot.git```
+```cd CoPilot```
 
-    access_log  /var/log/nginx/access.log  main;
-    error_log /var/log/nginx/error.log main;
+Install Composer using the command line option:
+<https://getcomposer.org/download/>
 
-    root   /path/to/CoPilot/public/;
-    index  index.php;
+Set up composer
+```php composer.phar -d=./core install```
 
-    location / {
-	try_files $uri $uri/ /index.php?url=$request_uri&$args;
-    }
+Create the cache directory (because i'm bad at git)
+```sudo mkdir core/cache```
 
-    error_page  404              /404.html;
+Set file permissions
+```sudo chmod -R 0755 core/cache```
 
-    # redirect server error pages to the static page /50x.html
-    #
-    error_page   500 502 503 504 404  /50x.html;
-    location = /50x.html {
-        root   /usr/share/nginx/html;
-    }
+Set file owner
+```sudo chown -R www-data ./```
 
-    # pass the PHP scripts to FastCGI
-    #
-    location ~ \.php$ {
-	try_files $uri 404;
-        fastcgi_pass   unix:/var/run/php5-fpm.sock;
-        fastcgi_index  index.php;
-        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
-        include        fastcgi_params;
-	fastcgi_intercept_errors on;
-    }
-}
-```
+Create and edit the config.
+Note: this version does not require app keys from cpp as a did not have time to finish the authenticated crest features.
+```mv core/config.php.dist core/config.php```
+
+I like nano, use what you like
+```nano core/config.php```
+Change "baseURL" to your url. "Ctrl + o" saves, "Ctrl + x" quits
 
 
+Time to configure nginx.
+
+Copy the example configuration:
+```sudo cp copilot.nginx.conf /etc/nginx/sites-available/copilot.conf```
+
+Edit it:
+```sudo nano /etc/nginx/sites-available/copilot.conf```
+
+if you are using a domain, change "server_name" to your domain name
+make sure "root" is the path to CoPilot/public
+save "Ctrl + o", quit "Ctrl + x"
+
+symlink our new config so nginx will load it
+ ```sudo ln -s /etc/nginx/sites-available/copilot.conf /etc/nginx/sites-enabled/copilot.conf```
+ 
+restart nginx
+```sudo service nginx restart```
+
+restart php
+```sudo service php5-fpm restart```
+
+
+You should be able to access the site now.
+If you get an error message check the error log:
+```tail /var/log/nginx/error.log```
 
