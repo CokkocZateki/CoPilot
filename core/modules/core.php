@@ -58,8 +58,10 @@
         public function index($typeID = null)
         {
             $readme = file_get_contents(dirname(APPROOT) . DIRECTORY_SEPARATOR . 'readme.md');
+            $demo = file_get_contents(dirname(APPROOT) . DIRECTORY_SEPARATOR . 'demo.md');
             $parsedown = new Parsedown();
-             $this->context['doc'] = $parsedown->parse($readme);
+            $this->context['readme'] = $parsedown->parse($readme);
+            $this->context['demo'] = $parsedown->parse($demo);
         }
 
         public function character($id)

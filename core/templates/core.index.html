@@ -1,12 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content1-2 %}
+<div class="panel">
+    <div class="panel-title">
+        <p>demo.md</p>
+    </div>
+    <div class="panel-body">
+        {{ demo | safe }}
+    </div>
+</div>
 {% endblock %}
 
 {% block content1-10 %}
-<div class="panel-group">
+<div class="panel">
+    <div class="panel-title">
+        <p>readme.md</p>
+    </div>
     <div class="panel-body">
-    {{ doc | safe }}
+    {{ readme | safe }}
     </div>
 </div>
 {% endblock %}

@@ -1,6 +1,7 @@
 ### CoPilot
 Simple system intel tool for eve online.
 
+[Demo](http://demo.ffevo.net/)
 
 #### Data Sources
 + [crest](https://developers.eveonline.com/)
