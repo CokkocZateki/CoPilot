@@ -43,7 +43,7 @@ Install Composer using the command line option:
 
 Set up composer
 
-```php composer.phar -d=./core install```
+```sudo php composer.phar -d=./core install```
 
 
 
