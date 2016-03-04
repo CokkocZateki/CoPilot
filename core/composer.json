@@ -1,0 +1,7 @@
+{
+  "require": {
+    "tedivm/stash": "^0.14.1",
+    "guzzlehttp/guzzle": "^6.1",
+    "erusev/parsedown": "^1.6"
+  }
+}

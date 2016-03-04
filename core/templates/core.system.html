@@ -1,0 +1,421 @@
+{% extends 'core.index.html' %}
+
+{% block content1-2 %}
+<div class="table-responsive">
+    <table class="table table-hover table-condensed">
+        <thead>
+        <tr  style="background: #15506c">
+            <th colspan="3">
+                System Details
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th rowspan="3">
+                <a href="https://zkillboard.com/system/{{ zkill.stats.id }}/" target="new">
+                    <img src="https://image.eveonline.com/Type/{{zkill.stats.info.sunTypeID}}_64.png" >
+                </a>
+            </th>
+        </tr>
+        <tr>
+            <td>System:</td>
+            <td><a href="https://zkillboard.com/system/{{ zkill.stats.id }}/" target="new">{{ zkill.stats.info.name }}</a></td>
+        </tr>
+        <tr>
+            <td>Region:</td>
+            <td><a href="https://zkillboard.com/region/{{ zkill.stats.info.regionID }}/" target="new">{{ zkill.stats.info.regionName }}</a></td>
+        </tr>
+        <tr>
+            <td colspan="2">Security Status</td>
+            <td style="color:{{zkill.stats.info.systemColorCode}}">{{ zkill.stats.info.solarSystemSecurity}}</td>
+        </tr>
+        {% if zkill.stats.info.systemClass %}
+        <tr>
+            <td colspan="2">Class:</td>
+            <td>{{ zkill.stats.info.systemClass }}</td>
+        </tr>
+        {% endif %}
+        {% if zkill.stats.info.systemEffect %}
+        <tr>
+            <td>Effect:</td>
+            <td colspan="2">{{ zkill.stats.info.systemEffect }}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <td colspan="2">Total Destroyed:</td>
+            <td>{{ zkill.stats.shipsDestroyed }}</td>
+        </tr>
+        <tr>
+            <td colspan="2">Recent Destroyed:</td>
+            <td>{{ zkill.stats.recentShipsDestroyed}}</td>
+        </tr>
+
+{% if zkill.stats.info.solarSystemSecurity < 0 %}
+
+{% else %}
+
+        <tr>
+            <th><a href="http://evemaps.dotlan.net/system/{{zkill.stats.info.id}}" target="new">Dotlan</a></th>
+            <th>1 Hour</th>
+            <th>24 Hours</th>
+        </tr>
+
+        <tr>
+            <td>Jumps</td>
+            <td>{{dotlan.Jumps_1hr}}</td>
+            <td>{{dotlan.Jumps_24hr}}</td>
+        </tr>
+        <tr>
+            <td>Ships</td>
+            <td>{{dotlan.ShipKills_1hr}}</td>
+            <td>{{dotlan.ShipKills_24hr}}</td>
+        </tr>
+        <tr>
+            <td>Pods</td>
+            <td>{{dotlan.PodKills_1hr}}</td>
+            <td>{{dotlan.PodKills_24hr}}</td>
+        </tr>
+        <tr>
+            <td>NPCs</td>
+            <td>{{dotlan.NPCKills_1hr}}</td>
+            <td>{{ dotlan.NPCKills_24hr }}</td>
+        </tr>
+
+{% endif %}
+
+        {% if route %}
+        <tr style="background: #15506c">
+            <td>
+                Jumps
+            </td>
+            <td>
+                Hub
+            </td>
+            <td>
+                Details
+            </td>
+        </tr>
+        {% for i, hub in route %}
+        <tr data-toggle="modal" data-target="#modal{{i}}">
+            <td>
+                <span class="badge">{{ hub | length }}</span>
+            </td>
+            <td>
+                {% for jump in hub %}
+                    {% if loop.last %}
+                        {{ jump.to.name }}
+                    {% endif %}
+                {% endfor %}
+            </td>
+            <td>
+                <span class="glyphicon glyphicon-menu-right"></span>
+            </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+
+    </tbody>
+    </table>
+</div>
+
+{% if route %}
+{% for i, hub in route %}
+<div id="modal{{i}}" class="modal modal-sm fade" role="dialog" style="width: auto">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ol type="1">
+                {% for c, jump in hub %}
+                    <li>
+                        <a href="/core/{{jump.to.systemid}}">{{jump.to.name}}</a>
+                        <span class="pull-right" style="color: {{ jump.to.security | secColor }};">
+                            {{jump.to.security}}
+                        </span>
+                    </li>
+                {% endfor %}
+                </ol>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% if zkill.stats.info.solarSystemSecurity < 0.4 %}
+
+{% if zkill.intel.caps %}
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr  style="background: #15506c">
+        <th colspan="4">
+            Cap Report
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for cap in zkill.intel.caps %}
+    <tr>
+
+    </tr>
+    <td colspan="2"   style="background: #503030">
+        <a href="https://zkillboard.com/kill/{{cap.killID}}/" >{{ cap.killTimestamp | date "Y-m-d" }}</a>
+    </td>
+    <tr>
+        <td>
+            <img src="https://image.eveonline.com/Character/{{cap.characterID}}_32.jpg" class="img-rounded" height="32" width="32">
+            <a href="https://zkillboard.com/character/{{cap.characterID}}/">{{ cap.characterName}}</a>
+        </td>
+        <td>
+            <img src="https://image.eveonline.com/Type/{{cap.shipTypeID}}_32.png" class="img-rounded" height="32" width="32">
+            {{ cap.shipTypeID | crestType }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <img src="https://image.eveonline.com/Corporation/{{ cap.corporationID }}_32.png"  class="img-rounded" height="32" width="32">
+            <a href="https://zkillboard.com/corporation/{{cap.corporationID}}/">
+                {{ cap.corporationName }}
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endif %}
+
+{% if zkill.intel.pos %}
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr  style="background: #15506c">
+        <th colspan="4">
+            POS Reports
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for pos in zkill.intel.pos %}
+    <tr>
+        <td colspan="3" style="background: #503030">
+            Last Seen {{ pos.killTimestamp | date "Y-m-d" }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+                {{ pos.locationName }}
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="https://image.eveonline.com/Corporation/{{ pos.corporationID }}_32.png"  class="img-rounded" height="32" width="32">
+            <a href="https://zkillboard.com/corporation/{{pos.corporationID}}/">
+                {{ pos.corporationName }}
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <img src="https://image.eveonline.com/Type/{{pos.shipTypeID}}_32.png" class="img-rounded" height="32" width="32">
+            {{ pos.shipTypeID | crestType }}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if zkill.stats.info.solarSystemSecurity > 0 %}
+{% if zkill.intel.concord %}
+<table class="table table-hover table-condensed">
+    <thead>
+    <tr  style="background: #15506c">
+        <th colspan="4">
+            Concord Report
+        </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {% for cap in zkill.intel.concord %}
+    <tr>
+        <td colspan="2" style="background: #503030">
+            <a href="https://zkillboard.com/kill/{{cap.killID}}/" >{{ cap.killTimestamp | relative_time}}</a>
+        </td>
+    </tr>
+    {% if cap.locationName %}
+    <tr>
+        <td colspan="2">
+            {{ cap.locationName | truncate 30}}
+        </td>
+    </tr>
+    {% endif %}
+    <tr>
+        <td>
+            <img src="https://image.eveonline.com/Character/{{cap.characterID}}_32.jpg" class="img-rounded" height="32" width="32">
+            <a href="https://zkillboard.com/character/{{cap.characterID}}/">{{ cap.characterName }}</a>
+        </td>
+        <td>
+            <img src="https://image.eveonline.com/Type/{{cap.shipTypeID}}_32.png" class="img-rounded" height="32" width="32">
+            {{ cap.shipTypeID | crestType  | truncate 15 }}
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <img src="https://image.eveonline.com/Corporation/{{ cap.corporationID }}_32.png"  class="img-rounded" height="32" width="32">
+            <a href="https://zkillboard.com/corporation/{{cap.corporationID}}/">
+                {{ cap.corporationName  | truncate 25}}
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+{% endif %}
+
+{% endblock %}
+
+{% block content1-10 %}
+    <table class="table table-hover table-condensed" style="padding: 0">
+        <thead>
+        <tr  style="background: #15506c">
+            <th colspan="6">
+                Kills
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i, kill in zkill.kills  %}
+        <tr class="dropdown-toggle" data-toggle="collapse" data-target="#details{{i}}">
+            <td>
+                {{ kill.killTimestamp  | relative_time "Y-m-d H:i:s" }}
+            </td>
+            <td style="white-space: nowrap">
+                {% if kill.victim.characterID %}
+                <img src="https://image.eveonline.com/Character/{{kill.victim.characterID}}_32.jpg" class="img-rounded" height="32" width="32">
+                <a href="https://zkillboard.com/character/{{kill.victim.characterID}}/">{{ kill.victim.characterName}}</a>
+                {% endif %}
+                <br/>
+                <img src="https://image.eveonline.com/Type/{% if kill.victim.shipTypeID < 1 %}1{% else %}{{kill.victim.shipTypeID}}{% endif %}_32.png" class="img-rounded" height="32" width="32">
+                {{ kill.victim.shipTypeID | crestType | truncate 15}}
+            </td>
+            <td>
+                <img src="https://image.eveonline.com/Corporation/{{ kill.victim.corporationID }}_32.png"  class="img-rounded" height="32" width="32">
+                <a href="https://zkillboard.com/corporation/{{ kill.victim.corporationID }}/">
+                    {{ kill.victim.corporationName | truncate 15}}
+                </a>
+                {% if kill.victim.allianceID != 0 %}
+                <br/>
+                <img src="https://image.eveonline.com/Alliance/{{ kill.victim.allianceID }}_32.png" class="img-rounded" height="32" width="32">
+                <a href="https://zkillboard.com/alliance/{{ kill.victim.allianceID }}/">{{ kill.victim.allianceName | truncate 15}}</a>
+                {% endif %}
+            </td>
+
+            {% for a, att in kill.attackers %}
+                {% if att.finalBlow %}
+                    <td style="white-space: nowrap">
+                        {% if att.characterID %}
+                        <img src="https://image.eveonline.com/Character/{{att.characterID}}_32.jpg" class="img-rounded" height="32" width="32">
+                        <a href="https://zkillboard.com/character/{{ att.characterID }}/">{{ att.characterName}}</a>
+                        <br/>
+                        {% endif %}
+                        {% if att.shipTypeID %}
+
+                        <img src="https://image.eveonline.com/Type/{% if att.shipTypeID < 1 %}1{% else %}{{att.shipTypeID}}{% endif %}_32.png" class="img-rounded" height="32" width="32">
+                        {{att.shipTypeID | crestType | truncate 15}}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <img src="https://image.eveonline.com/Corporation/{{ att.corporationID }}_32.png" class="img-rounded" height="32" width="32">
+                        <a href="https://zkillboard.com/corporation/{{ att.corporationID }}/">{{ att.corporationName | truncate 15}}</a>
+                    {% if att.allianceID %}
+                        <br/>
+                        <img src="https://image.eveonline.com/Alliance/{{ att.allianceID }}_32.png" class="img-rounded" height="32" width="32">
+                        <a href="https://zkillboard.com/alliance/{{ att.allianceID }}/">{{ att.allianceName | truncate 15}}</a>
+                    {% endif %}
+                    </td>
+                {% endif %}
+            {% endfor %}
+            <td>
+                <span class="badge">{{ kill.attackers | length }}</span>
+                <br/>
+                <br/>
+                <a href="https://zkillboard.com/kill/{{kill.killID}}/" target="new">zKillboard</a>
+            </td>
+        </tr>
+
+
+        <tr id="details{{i}}" class="collapse">
+            <td colspan="6">
+                <table class="table table-condensed">
+                    <tbody>
+                        {% for a, att in kill.attackers %}
+                        <tr>
+                            <td>
+                                <img src="https://image.eveonline.com/Type/{% if att.shipTypeID < 1 %}1{% else %}{{att.shipTypeID}}{% endif %}_32.png" class="img-rounded" height="32" width="32">
+                                {{att.shipTypeID | crestType}}
+                            </td>
+                            <td>
+                                {% if att.characterID %}
+                                <img src="https://image.eveonline.com/Character/{{att.characterID}}_32.jpg" class="img-rounded" height="32" width="32">
+                                <a href="https://zkillboard.com/character/{{ att.characterID }}/">{{ att.characterName }}</a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <img src="https://image.eveonline.com/Corporation/{{ att.corporationID }}_32.png" class="img-rounded" height="32" width="32">
+                                <a href="https://zkillboard.com/corporation/{{ att.corporationID }}/">{{ att.corporationName }}</a>
+                            </td>
+                            <td>
+                                {% if att.allianceID %}
+                                <img src="https://image.eveonline.com/Alliance/{{ att.allianceID }}_32.png" class="img-rounded" height="32" width="32">
+                                <a href="https://zkillboard.com/alliance/{{ att.allianceID }}/">{{ att.allianceName }}</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+
+{% block content1-22 %}
+
+
+
+<div class="table-responsive">
+    <table class="table table-hover table-condensed">
+        <thead>
+        <tr  style="background: #15506c">
+            <th colspan="2">
+                Active in the last 7 days
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for stat in zkill.stats.activepvp %}
+        <tr>
+            <td>{{ stat.type }}</td>
+            <td>{{ stat.count }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

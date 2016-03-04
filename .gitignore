@@ -1,0 +1,7 @@
+.
+.idea/
+core/cache/
+*.lock
+*.phar
+core/vendor/
+core/config.php
